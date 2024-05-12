@@ -63,11 +63,10 @@ export const shellSort = (arr: number[]) => {
   return arr;
 };
 
-
 /**
  * @description 原地归并排序
  */
-export const mergeSort = (arr: number[]):number[] => {
+export const inPlacemergeSort = (arr: number[]):number[] => {
     const partitionArr = (start:number,end:number)=>{
         if(end-start <1) {
 
@@ -171,16 +170,10 @@ export const mergeSort = (arr: number[]):number[] => {
             while(true){
               // 2.从右边第一项开始查找比当前值大的数值进行交换 如果不存在则直接结束
               if(leftSort()) break
-
-
               // 3.交换完成重新步骤2 直到在左边不存在比当前值大的数值
               rightSort()
-
-              
             }
             
-            
-           
         }
     }
 
@@ -188,5 +181,105 @@ export const mergeSort = (arr: number[]):number[] => {
     return arr
 }
 
+
+/**
+ * @description 原地归并排序
+ */
+export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):number[] => {
+    
+      if(end-start <= 1) {
+        return [arr[start]]
+      }
+
+      const middle = Math.floor((start+end)/2)
+      const left = mergeSort(arr,start,middle)
+      const right = mergeSort(arr,middle,end)
+      const result:number[] =[]
+      let leftIndex = 0;
+      let rightIndex = 0;
+      while(leftIndex < left.length || rightIndex < right.length ) {
+        const currentLeft = left[leftIndex]
+        const currentRight = right[rightIndex]
+
+        if(leftIndex >= left.length) {
+          result.push(currentRight)
+          rightIndex++
+          continue
+        } else if(rightIndex >= right.length) {
+          result.push(currentLeft)
+          leftIndex++
+          continue
+        }
+
+        if(currentLeft < currentRight) {
+          result.push(currentLeft)
+          leftIndex++
+        } else {
+          result.push(currentRight)
+          rightIndex++
+        }
+      }
+
+
+      return result
+
+}
+
+
+/**
+ * @description 快速排序
+ */
+export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.length-1): number[] => {
+
+    const len = endIndex-startIndex + 1;
+    if(len <1 || startIndex<0 || endIndex>=arr.length || endIndex<0 ) return arr
+
+    // 1.记录基准值下标和下次基准值交换位置 
+    let baseIndex = startIndex;
+    let nextBaseIndex = baseIndex
+    // 优化算法 记录与基准值相同的下标
+    const sameIndex:number[]= []
+
+    // 2.找到基准值
+    const baseValue = arr[baseIndex]
+
+
+    // 3.循环将小于基准值的项与基准值位置互换，基准值向右移动
+    for(let i=nextBaseIndex+1;i<=endIndex;i++){
+      if(baseValue>=arr[i]){
+        if(baseValue === arr[i]){
+          sameIndex.push(nextBaseIndex)
+        }
+        if(nextBaseIndex===baseIndex) {
+          baseIndex = i;
+        }
+        swap(arr,nextBaseIndex,i)
+        
+        nextBaseIndex++;
+      } 
+    }
+
+
+    // 4.将基准值换到最终基准下标位置
+    if(nextBaseIndex < baseIndex){
+      swap(arr,nextBaseIndex,baseIndex)
+
+    }
+    // 将相同值位置进行交换
+    for(let i=sameIndex.length-1;i>=0;i--){
+      nextBaseIndex--
+      const index = sameIndex[i]
+      swap(arr,nextBaseIndex,index)
+
+    }
+
+    // 5.以基准值为划分点 对左右两个数组递归排序
+    quickSort(arr,startIndex,nextBaseIndex-1)
+    quickSort(arr,nextBaseIndex+sameIndex.length+1,endIndex)
+
+    return arr
+
+
+}
 
 
