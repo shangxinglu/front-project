@@ -17,7 +17,10 @@ export const isSorted = (arr: number[]): boolean => {
 /**
  * @description 生成一个随机数组, 可以指定数组长度和最大值
  */
-export const generateRandomArray = (n: number=20, max: number=1e3): number[] => {
+export const generateRandomArray = (n: number|string=20, max: number=1e3): number[] => {
+    if(typeof n === 'string') {
+        n = parseInt(n);
+    }
     const arr = [];
     for(let i=0;i<n;i++) {
         arr.push(Math.floor(Math.random() * max));
@@ -47,3 +50,13 @@ export const swap = (arr: number[], i: number, j: number): void => {
     [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
+/**
+ * @description 获取函数执行时间
+ */
+export const getRunTime = (fn: Function, ...args: any[]): number => {
+    const start = performance.now();
+    fn(...args);
+  
+    const end = performance.now();
+    return end - start;
+}

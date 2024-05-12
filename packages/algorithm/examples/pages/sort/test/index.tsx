@@ -15,7 +15,7 @@ import {
 export default defineComponent({
     setup(props) {
 
-        const arr = generateRandomArray();
+        const arr = generateRandomArray(1000);
     
         console.log('arr', arr);
 

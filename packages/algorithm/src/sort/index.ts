@@ -1,5 +1,4 @@
 import { getFirst, getLast, swap } from "@src/utils";
-import { get } from "http";
 
 /**
  * @description 选择排序
@@ -66,7 +65,7 @@ export const shellSort = (arr: number[]) => {
 /**
  * @description 原地归并排序
  */
-export const inPlacemergeSort = (arr: number[]):number[] => {
+export const inPlaceMergeSort = (arr: number[]):number[] => {
     const partitionArr = (start:number,end:number)=>{
         if(end-start <1) {
 
@@ -183,7 +182,7 @@ export const inPlacemergeSort = (arr: number[]):number[] => {
 
 
 /**
- * @description 原地归并排序
+ * @description 归并排序
  */
 export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):number[] => {
     
@@ -225,11 +224,53 @@ export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):
 
 }
 
-
 /**
  * @description 快速排序
  */
 export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.length-1): number[] => {
+    const len = endIndex-startIndex + 1;
+    if(len <1 || startIndex<0 || endIndex>=arr.length || endIndex<0 ) return arr
+
+    // 1.记录基准值下标
+    let baseIndex = startIndex;
+
+    // 2.找到基准值
+    const baseValue = arr[baseIndex]
+    // 优化算法 记录与基准值相同数组
+    let sameArr:number[] = [baseValue]
+    const leftArr:number[] = []
+    const rightArr:number[] = []
+
+    // 3.循环将小于基准值的项放入左数组，大于基准值的项放入右数组
+    for(let i=baseIndex+1;i<=endIndex;i++){
+      if(baseValue>=arr[i]){
+        
+        if(baseValue === arr[i]){
+          sameArr.push(arr[i])
+        } else {
+          leftArr.push(arr[i])
+        }
+      } else {
+        rightArr.push(arr[i])
+      }
+    }
+
+    // 4.以基准值为划分点 对左右两个数组递归排序
+    const left = quickSort(leftArr,0,leftArr.length-1)
+    const right = quickSort(rightArr,0,rightArr.length-1)
+    
+    return left.concat(sameArr,right)
+
+    
+
+    
+}
+
+
+/**
+ * @description 原地快速排序
+ */
+export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.length-1): number[] => {
 
     const len = endIndex-startIndex + 1;
     if(len <1 || startIndex<0 || endIndex>=arr.length || endIndex<0 ) return arr
@@ -274,8 +315,8 @@ export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.
     }
 
     // 5.以基准值为划分点 对左右两个数组递归排序
-    quickSort(arr,startIndex,nextBaseIndex-1)
-    quickSort(arr,nextBaseIndex+sameIndex.length+1,endIndex)
+    inPlaceQuickSort(arr,startIndex,nextBaseIndex-1)
+    inPlaceQuickSort(arr,nextBaseIndex+sameIndex.length+1,endIndex)
 
     return arr
 
