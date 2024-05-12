@@ -25,3 +25,25 @@ export const generateRandomArray = (n: number=20, max: number=1e3): number[] => 
 
     return arr;
 }
+
+/**
+ * @description 获取数组最后一个元素
+ */
+export const getLast = (arr: number[]): number => {
+    return arr[arr.length - 1];
+}
+
+/**
+ * @description 获取数组第一个元素
+ */
+export const getFirst = (arr: number[]): number => {
+    return arr[0];
+}
+
+/**
+ * @description 交换数组中两个元素的位置
+ */
+export const swap = (arr: number[], i: number, j: number): void => {
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+}
+
