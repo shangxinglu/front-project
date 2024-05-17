@@ -28,8 +28,6 @@ export default defineComponent({
     const tableData = ref<SortTableItem[]>([]);
 
     const handleClickGenerate = () => {
-      
-
       generateTableData();
     };
 

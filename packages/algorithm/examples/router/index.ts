@@ -8,6 +8,10 @@ const router = createRouter({
             component: () => import('@/pages/sort/index')
         },
         {
+            path:'/sort/priorityQueue',
+            component:()=>import('@/pages/sort/priorityQueue')
+        },
+        {
             path: '/sort/test',
             component: () => import('@/pages/sort/test/index')
         }
