@@ -60,3 +60,48 @@ export const getRunTime = (fn: Function, ...args: any[]): number => {
     const end = performance.now();
     return end - start;
 }
+
+/**
+ * @description 是否是undefined
+ */
+export const isUndefined = (val: any): boolean => {
+    return typeof val === 'undefined';
+}
+
+/**
+ * @description 判断是否是偶数
+ */
+export const isEven = (num: number): boolean => {
+    return num % 2 === 0;
+}
+
+
+/**
+ * @description 检验优先队列树是否有序
+ */
+export const isPriorityQueueSorted = (queue: number[]): boolean => {
+    const len = queue.length;
+    let currnetIndex = 0;
+    while(currnetIndex<len) {
+        const leftIndex = 2*currnetIndex+1;
+        const rightIndex = 2*currnetIndex+2;
+
+        // 检测父子节点
+        if(leftIndex<len && queue[leftIndex]>queue[currnetIndex]) {
+            console.error('currnetIndex',currnetIndex,queue[currnetIndex])
+            return false;
+        }
+
+        if(rightIndex<len && queue[rightIndex]>queue[currnetIndex]) {
+            console.error('currnetIndex',currnetIndex,queue[currnetIndex])
+            return false;
+        }
+
+
+       
+        currnetIndex++;
+
+    }
+
+    return true;
+}

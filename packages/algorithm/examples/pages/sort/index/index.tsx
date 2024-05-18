@@ -2,6 +2,7 @@ import { defineComponent, reactive, ref } from "vue";
 import { Button, Input, Table, Textarea } from "ant-design-vue";
 import { generateRandomArray, getRunTime } from "@src/utils";
 import {
+  heapSort,
     inPlaceMergeSort,
   inPlaceQuickSort,
   insertSort,
@@ -61,6 +62,11 @@ export default defineComponent({
         name: "希尔排序",
         fn: shellSort,
       },
+      {
+        name: "堆排序",
+        fn: heapSort,
+      }
+      
     ];
 
     // 生成排序表格数据

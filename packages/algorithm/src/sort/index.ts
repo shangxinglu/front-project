@@ -1,4 +1,5 @@
-import { getFirst, getLast, swap } from "@src/utils";
+import { getFirst, getLast, isPriorityQueueSorted, swap } from "@src/utils";
+import { sink } from "./queue";
 
 /**
  * @description 选择排序
@@ -324,3 +325,34 @@ export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:numb
 }
 
 
+
+
+/**
+ * @description 堆排序
+ */
+export const heapSort = (arr: number[]): number[] => {
+  const len = arr.length;
+  let currentIndex = Math.floor(len/2)-1
+
+   // 1.构建最大堆
+   while(currentIndex>=0){
+    sink(arr,currentIndex);
+    currentIndex--
+   }
+
+  // 2.进行下沉排序
+  
+  // 剩余长度
+   let  remainLen = len;
+   while(remainLen>0){
+      // 重新下沉
+      sink(arr,0,remainLen)
+
+      // 交换最大值到最后一位
+      swap(arr,0,remainLen-1)
+
+      remainLen--
+   }
+
+   return arr
+}

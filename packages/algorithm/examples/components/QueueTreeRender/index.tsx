@@ -12,12 +12,13 @@ export default defineComponent({
   props: QueueTreeRenderProps,
   setup(props) {
     let ctx: CanvasRenderingContext2D;
-    const queueArr = ref<number[]>([]);
+    const queueArr = ref<number[]>([...props.queue]);
 
     watch(
       () => props.queue,
       (newVal) => {
         queueArr.value = [...newVal];
+
       },{
         deep: true,
       }
@@ -27,6 +28,7 @@ export default defineComponent({
       () => queueArr.value,
       (newVal) => {
         clear();
+
         draw();
       }
     );
