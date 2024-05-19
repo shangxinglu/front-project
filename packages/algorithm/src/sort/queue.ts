@@ -1,5 +1,8 @@
-import { isEven, isUndefined, swap } from "@src/utils";
-
+import { isEqual, isEven, isUndefined, less, swap } from "@src/utils";
+const defalutSortCompare= {
+  less: less,
+  isEqual: isEqual,
+}
 /**
  * @description 获取父级下标
  */
@@ -19,17 +22,24 @@ const getLeftIndex = (index: number) => {
 /**
  * @description 获取当前兄弟节点最大下标
  */
-const getMaxSiblingIndex = (queue: number[], index: number,len=queue.length) => {
+const getMaxSiblingIndex = <T>(queue: T[],index: number,optinos:{
+  compare:SortCompare,
+  len:number
+}={
+  compare:defalutSortCompare,
+  len:queue.length
+}) => {
+  const {compare,len} = optinos
   if (isEven(index)) {
     const leftIndex = index - 1;
     const rightIndex = index;
-    return queue[leftIndex] > queue[rightIndex] ? leftIndex : rightIndex;
+    return !compare.less(queue[leftIndex], queue[rightIndex]) ? leftIndex : rightIndex;
   } else if(index+1>=len || isUndefined(queue[index + 1])) {
     return index;
   } else {
     const leftIndex = index;
     const rightIndex = index + 1;
-    return queue[leftIndex] > queue[rightIndex] ? leftIndex : rightIndex;
+    return !compare.less(queue[leftIndex], queue[rightIndex]) ? leftIndex : rightIndex;
   }
 };
 
@@ -54,12 +64,19 @@ const swim = (queue: number[]) => {
 /**
  * @description 对优先队列进行从上而下有序化
  */
-export const sink = (queue: number[],currentIndex=0,len=queue.length) => {
-  
+export const sink = <T>(queue: T[],compare:SortCompare=defalutSortCompare,optinos:{
+  currentIndex:number,
+  len?:number
+}  = {
+  currentIndex:0,
+  len:queue.length}) => {
+    let {currentIndex,len = queue.length} = optinos 
   let leftIndex = getLeftIndex(currentIndex);
 
   while (currentIndex < len && leftIndex < len) {
-    const maxSiblingIndex = getMaxSiblingIndex(queue, leftIndex,len);
+    const maxSiblingIndex = getMaxSiblingIndex(queue, leftIndex,{
+      compare,
+      len});
     if (maxSiblingIndex <len && queue[maxSiblingIndex] > queue[currentIndex]) {
       swap(queue, currentIndex, maxSiblingIndex);
       currentIndex = maxSiblingIndex;

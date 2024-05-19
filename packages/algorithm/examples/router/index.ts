@@ -14,6 +14,10 @@ const router = createRouter({
         {
             path: '/sort/test',
             component: () => import('@/pages/sort/test/index')
+        },
+        {
+            path: '/lookup/bst',
+            component: () => import('@/pages/lookup/BST/index')
         }
     ]
 })

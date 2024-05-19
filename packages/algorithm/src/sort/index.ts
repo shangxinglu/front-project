@@ -1,16 +1,22 @@
-import { getFirst, getLast, isPriorityQueueSorted, swap } from "@src/utils";
+import { getFirst, getLast, isEqual, isPriorityQueueSorted, less, swap } from "@src/utils";
 import { sink } from "./queue";
+
+
+const defalutSortCompare= {
+  less: less,
+  isEqual: isEqual,
+}
 
 /**
  * @description 选择排序
  */
-export const selectSort = (arr: number[]): number[] => {
+export const selectSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare): T[] => {
   const len = arr.length;
 
   for (let i = 0; i < len; i++) {
     let minIndex = i;
     for (let j = i + 1; j < len; j++) {
-      if (arr[minIndex] > arr[j]) {
+      if (!compare.less(arr[minIndex],arr[j])) {
         minIndex = j;
       }
     }
@@ -23,12 +29,12 @@ export const selectSort = (arr: number[]): number[] => {
 /**
  * @description 插入排序
  */
-export const insertSort = (arr: number[]) => {
+export const insertSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare) => {
   const len = arr.length;
 
   for (let i = 0; i < len; i++) {
     for (let j = i; j > 0; j--) {
-      if (arr[j] >= arr[j - 1]) break;
+      if (compare.less(arr[j - 1],arr[j])) break;
 
       [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]];
     }
@@ -40,7 +46,7 @@ export const insertSort = (arr: number[]) => {
 /**
  * @description 希尔排序
  */
-export const shellSort = (arr: number[]) => {
+export const shellSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare) => {
   const len = arr.length;
   let h = 1;
   while (h < len / 3) {
@@ -50,7 +56,7 @@ export const shellSort = (arr: number[]) => {
   while (h >= 1) {
     for (let i = h; i < len; i++) {
       for (let j = i; j >= h; j -= h) {
-        if (arr[j] >= arr[j - h]) continue;
+        if (compare.less(arr[j - h],arr[j] )) continue;
 
         [arr[j], arr[j - h]] = [arr[j - h], arr[j]];
       }
@@ -66,7 +72,7 @@ export const shellSort = (arr: number[]) => {
 /**
  * @description 原地归并排序
  */
-export const inPlaceMergeSort = (arr: number[]):number[] => {
+export const inPlaceMergeSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare):T[] => {
     const partitionArr = (start:number,end:number)=>{
         if(end-start <1) {
 
@@ -90,12 +96,12 @@ export const inPlaceMergeSort = (arr: number[]):number[] => {
         const rightMaxIndex = getLast(r)
         const rightMin = arr[rightMinIndex]
         const rightMax = arr[rightMaxIndex]
-        if(leftMax <= rightMin) return
+        if(compare.less(leftMax, rightMin)) return
 
         const leftLen = leftMaxIndex - leftMinIndex + 1
         const rightLen = rightMaxIndex - rightMinIndex + 1
       
-        if(leftMin >= rightMax) {
+        if(compare.less(rightMax,leftMin)) {
       
           // 当左边长度大于右边长度时，保存左边的最大值
           if(leftLen > rightLen) {
@@ -130,7 +136,7 @@ export const inPlaceMergeSort = (arr: number[]):number[] => {
           const minLen = Math.min(leftLen,rightLen);
             // 1.左右数组相同下标位置对比互换
             for(let i=0;i<minLen;i++) {
-              if(arr[leftMinIndex+i] > arr[rightMinIndex+i]) {
+              if(!compare.less(arr[leftMinIndex+i],arr[rightMinIndex+i])) {
                 swap(arr,leftMinIndex+i,rightMinIndex+i)
               }
             }
@@ -141,7 +147,7 @@ export const inPlaceMergeSort = (arr: number[]):number[] => {
               let rightFirst = arr[rightMinIndex]
               for(let i=0;i<leftLen;i++){
                 const currentLeft = arr[leftMinIndex+i]
-                  if(currentLeft>rightFirst){
+                  if(!compare.less(currentLeft,rightFirst)){
                     swap(arr,rightMinIndex,leftMinIndex+i);
                     rightFirst = currentLeft
                     isSorted = false
@@ -158,7 +164,7 @@ export const inPlaceMergeSort = (arr: number[]):number[] => {
               for(let i=1;i<rightLen;i++){
                 const current = arr[rightMinIndex+i-1];
                 const next = arr[rightMinIndex+i];
-                if(current>next) {
+                if(!compare.less(current,next)) {
                   swap(arr,rightMinIndex+i,rightMinIndex+i-1)
                   isSorted= false
                 }
@@ -185,15 +191,21 @@ export const inPlaceMergeSort = (arr: number[]):number[] => {
 /**
  * @description 归并排序
  */
-export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):number[] => {
+export const mergeSort = (arr: number[],compare:SortCompare=defalutSortCompare,options:{
+  start:number,
+  end:number
+} ={
+  start:0,end:arr.length-1
+}):number[] => {
+  const {start,end} = options
     
       if(end-start <= 1) {
         return [arr[start]]
       }
 
       const middle = Math.floor((start+end)/2)
-      const left = mergeSort(arr,start,middle)
-      const right = mergeSort(arr,middle,end)
+      const left = mergeSort(arr,compare,{start,end:middle})
+      const right = mergeSort(arr,compare,{start:middle,end})
       const result:number[] =[]
       let leftIndex = 0;
       let rightIndex = 0;
@@ -211,7 +223,7 @@ export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):
           continue
         }
 
-        if(currentLeft < currentRight) {
+        if(!compare.less(currentRight,currentLeft) ) {
           result.push(currentLeft)
           leftIndex++
         } else {
@@ -228,7 +240,14 @@ export const mergeSort = (arr: number[],start:number=0,end:number=arr.length-1):
 /**
  * @description 快速排序
  */
-export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.length-1): number[] => {
+export const quickSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare,options:{
+  startIndex:number,
+  endIndex:number
+} = {
+  startIndex:0,
+  endIndex:arr.length-1}
+): T[] => {
+  const {startIndex,endIndex} = options
     const len = endIndex-startIndex + 1;
     if(len <1 || startIndex<0 || endIndex>=arr.length || endIndex<0 ) return arr
 
@@ -238,15 +257,15 @@ export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.
     // 2.找到基准值
     const baseValue = arr[baseIndex]
     // 优化算法 记录与基准值相同数组
-    let sameArr:number[] = [baseValue]
-    const leftArr:number[] = []
-    const rightArr:number[] = []
+    let sameArr:T[] = [baseValue]
+    const leftArr:T[] = []
+    const rightArr:T[] = []
 
     // 3.循环将小于基准值的项放入左数组，大于基准值的项放入右数组
     for(let i=baseIndex+1;i<=endIndex;i++){
-      if(baseValue>=arr[i]){
+      if(compare.less(arr[i],baseValue)){
         
-        if(baseValue === arr[i]){
+        if(compare.isEqual!(baseValue, arr[i])){
           sameArr.push(arr[i])
         } else {
           leftArr.push(arr[i])
@@ -257,8 +276,8 @@ export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.
     }
 
     // 4.以基准值为划分点 对左右两个数组递归排序
-    const left = quickSort(leftArr,0,leftArr.length-1)
-    const right = quickSort(rightArr,0,rightArr.length-1)
+    const left = quickSort(leftArr,compare,{startIndex:0,endIndex:leftArr.length-1})
+    const right = quickSort(rightArr,compare,{startIndex:0,endIndex:rightArr.length-1})
     
     return left.concat(sameArr,right)
 
@@ -271,8 +290,14 @@ export const quickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.
 /**
  * @description 原地快速排序
  */
-export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:number=arr.length-1): number[] => {
-
+export const inPlaceQuickSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare,options:{
+  startIndex:number,
+  endIndex:number
+} = {
+  startIndex:0,
+  endIndex:arr.length-1}
+): T[] => {
+  const {startIndex,endIndex} = options
     const len = endIndex-startIndex + 1;
     if(len <1 || startIndex<0 || endIndex>=arr.length || endIndex<0 ) return arr
 
@@ -288,8 +313,8 @@ export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:numb
 
     // 3.循环将小于基准值的项与基准值位置互换，基准值向右移动
     for(let i=nextBaseIndex+1;i<=endIndex;i++){
-      if(baseValue>=arr[i]){
-        if(baseValue === arr[i]){
+      if(compare.less(arr[i],baseValue)){
+        if(compare.isEqual!(baseValue,arr[i])){
           sameIndex.push(nextBaseIndex)
         }
         if(nextBaseIndex===baseIndex) {
@@ -316,8 +341,8 @@ export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:numb
     }
 
     // 5.以基准值为划分点 对左右两个数组递归排序
-    inPlaceQuickSort(arr,startIndex,nextBaseIndex-1)
-    inPlaceQuickSort(arr,nextBaseIndex+sameIndex.length+1,endIndex)
+    inPlaceQuickSort(arr,compare,{startIndex,endIndex:nextBaseIndex-1})
+    inPlaceQuickSort(arr,compare,{startIndex:nextBaseIndex+sameIndex.length+1,endIndex})
 
     return arr
 
@@ -330,13 +355,13 @@ export const inPlaceQuickSort = (arr: number[],startIndex:number=0,endIndex:numb
 /**
  * @description 堆排序
  */
-export const heapSort = (arr: number[]): number[] => {
+export const heapSort = <T>(arr: T[],compare:SortCompare=defalutSortCompare): T[] => {
   const len = arr.length;
   let currentIndex = Math.floor(len/2)-1
 
    // 1.构建最大堆
    while(currentIndex>=0){
-    sink(arr,currentIndex);
+    sink(arr,compare,{currentIndex});
     currentIndex--
    }
 
@@ -346,7 +371,7 @@ export const heapSort = (arr: number[]): number[] => {
    let  remainLen = len;
    while(remainLen>0){
       // 重新下沉
-      sink(arr,0,remainLen)
+      sink(arr,compare,{currentIndex:0,len:remainLen})
 
       // 交换最大值到最后一位
       swap(arr,0,remainLen-1)

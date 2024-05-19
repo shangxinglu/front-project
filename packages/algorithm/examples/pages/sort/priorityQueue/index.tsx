@@ -123,7 +123,7 @@ export default defineComponent({
     };
 
     return () => (
-      <div class="h-full px-15">
+      <div class="h-full px-[15px]">
         {renderForm()}
         <QueueTreeRender class="mt-[15px] h-[1000px] " queue={queueArr.value} />
       </div>

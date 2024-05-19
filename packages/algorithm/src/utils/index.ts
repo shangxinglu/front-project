@@ -1,4 +1,27 @@
 /**
+ * @description 比较数字大小
+ */
+export const less = (a: number, b: number): boolean => {
+    return a <= b;
+}
+
+/**
+ * @description 比较两个数字是否相等
+ */
+export const isEqual = (a: number, b: number): boolean => {
+    return a === b;
+}
+
+
+/**
+ * @description 数字类型比较
+ */
+export const numberCompare = {
+    less,
+    isEqual,
+}
+
+/**
  * @description 检查数组是否有序
  */
 export const isSorted = (arr: number[]): boolean => {
@@ -46,7 +69,7 @@ export const getFirst = (arr: number[]): number => {
 /**
  * @description 交换数组中两个元素的位置
  */
-export const swap = (arr: number[], i: number, j: number): void => {
+export const swap = <T>(arr: T[], i: number, j: number): void => {
     [arr[i], arr[j]] = [arr[j], arr[i]];
 }
 
@@ -104,4 +127,25 @@ export const isPriorityQueueSorted = (queue: number[]): boolean => {
     }
 
     return true;
+}
+
+
+/**
+ * @description 检测二叉树是否有序
+ */
+export const isBSTreeSorted = <T>(node: BSTreeNode<T>|null,compare:SortCompare=numberCompare): boolean => {
+    
+    if(!node) {
+        return true;
+    }
+
+    if(node.left && !compare.less(node.left.value,node.value)) {
+        return false;
+    }
+
+    if(node.right && !compare.less(node.value,node.right.value)) {
+        return false;
+    }
+
+    return isBSTreeSorted(node.left,compare) && isBSTreeSorted(node.right,compare);
 }
