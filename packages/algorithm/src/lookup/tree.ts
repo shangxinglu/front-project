@@ -103,7 +103,6 @@ export class BSTree<T> {
       if (current.parent) {
         current = current.parent;
         fn(current);
-
       } else {
         break;
       }
@@ -165,7 +164,6 @@ export class BSTree<T> {
 
   // 将单边节点的子树连接到父节点
   connectParent(node: BSTreeNode<T>, child: BSTreeNode<T>) {
-
     if (node.parent) {
       if (node.parent.left === node) {
         node.parent.left = child;
@@ -201,16 +199,13 @@ export class BSTree<T> {
 
   // 删除节点
   delNode(node: BSTreeNode<T>) {
-   
-
     const nearNode = this.getNearNode(node);
 
-
     if (nearNode) {
-        this.reduceParentNodeSize(nearNode);
-        node.key = nearNode.key;
-        node.value = nearNode.value;
-  
+      this.reduceParentNodeSize(nearNode);
+      node.key = nearNode.key;
+      node.value = nearNode.value;
+
       if (nearNode.left) {
         this.connectParent(nearNode, nearNode.left);
       } else if (nearNode.right) {
@@ -219,12 +214,9 @@ export class BSTree<T> {
         this.delLeafNode(nearNode);
       }
     } else {
-        
-        this.reduceParentNodeSize(node);
-        this.delLeafNode(node);
+      this.reduceParentNodeSize(node);
+      this.delLeafNode(node);
     }
-
-   
   }
 
   // 删除最小节点
@@ -249,4 +241,48 @@ export class BSTree<T> {
       node.nodeSize--;
     });
   }
+
+  /**
+   * @description 通过节点排名查找节点
+   */
+  rankNode(rank: number) {
+    let current = this.root;
+    if (!current) return null;
+    if(rank<1 || rank>current.nodeSize+1) return null;
+    let leftSize = 0;
+    let rightSize = 0;
+    while (current) {
+        if(current.left){
+            leftSize = current.left.nodeSize + 1
+        } else {
+            leftSize = 0
+        }
+
+        if(current.right) {
+            rightSize = current.right.nodeSize + 1
+        } else {
+            rightSize = 0
+        }
+  
+
+      if (rank < leftSize) {
+        current = current.left;
+        continue;
+      } else if (rank === leftSize) {
+        return this.findMaxNode(current.left!);
+      } else if (rank === leftSize + 1) {
+        return current;
+      } else if (rank - leftSize - 1 === rightSize) {
+        return this.findMaxNode(current.right!);
+      } else if (rank - leftSize - 1 < rightSize) {
+        current = current.right;
+        rank = rank - leftSize - 1;
+        continue;
+      }
+    }
+
+    return null;
+  }
+
+
 }
